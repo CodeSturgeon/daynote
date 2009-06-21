@@ -1,0 +1,142 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>Quick Note form</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
+</head>
+<body>
+<form method="" action="">
+<input type="text" name='date' value='' /><br />
+<input type="text" name="summary" value="" /><br />
+<textarea name="detail"></textarea><br />
+<span id='go'>Click Here</span>
+</form>
+<ul id='daysUL'></ul>
+</body>
+  <script src="/_utils/script/json2.js"></script>
+  <script src="/_utils/script/jquery.js?1.2.6"></script>
+  <script src="/_utils/script/jquery.couch.js?0.8.0"></script>
+  <script type="text/javascript" charset="utf-8">
+    // Get CouchDB data
+    var dbname = document.location.href.split('/')[3];
+    var design = unescape(document.location.href).split('/')[5];
+    var DB = $.couch.db(dbname);
+    // Var to track the expanded days
+    var expandedDays = {};
+    var toggleDay = function(dayKey){
+        var dayId = dayKey.replace(/\//g, '_');
+        var dayUL = $('#'+dayId);
+        if(expandedDays[dayKey]){
+            expandedDays[dayKey] = false;
+            dayUL.empty()
+        }else{
+            expandedDays[dayKey] = true;
+            populateDay(dayKey, dayUL);
+        }
+    }
+    var toggler = function(dayKey){
+        var toggleDayCap = function(){
+            var dayId = dayKey.replace(/\//g, '_');
+            var dayUL = $('#'+dayId);
+            if(expandedDays[dayKey]){
+                expandedDays[dayKey] = false;
+                dayUL.empty()
+            }else{
+                expandedDays[dayKey] = true;
+                populateDay(dayKey, dayUL);
+            }
+        }
+        return toggleDayCap;
+    }
+    // Small padding function
+    var pad2 = function(number){ return (number<10) ? '0' + number : number; }
+    // Updates UL that lists days
+    var updateDayList = function(){
+        DB.view(design+'/daylist', {
+            'success': function(data, testStatus){
+                var daysUL = $('#daysUL');
+                var docFrag = document.createDocumentFragment();
+                for(var rowNum in data['rows']){
+                    var row = data['rows'][rowNum];
+                    var dayKey = row['key'];
+                    var dayId = dayKey.replace(/\//g,'_');
+                    var dayNoteNum = row['value'];
+                    var dayDate = new Date(row['key']);
+                    var dayTitle = (dayDate.getMonth()+1)
+                    dayTitle += '/'+pad2(dayDate.getDate());
+                    var dayLI = $('<li>'+dayTitle+' ['+dayNoteNum+']</li>');
+                    docFrag.appendChild(dayLI[0]);
+                    dayLI.bind('click', toggler(dayKey));
+                    var dayUL = $('<ul id="'+dayId+'"></ul>');
+                    docFrag.appendChild(dayUL[0]);
+                    if(expandedDays[dayKey]){
+                        populateDay(dayKey, dayUL);
+                    }
+                }
+                // for each expandedDays populateDay
+                daysUL.empty().append(docFrag);
+            },
+            'group':'true',
+            'limit':'5',
+            'descending':'true'
+        });
+    }
+    var populateDay = function(dayKey, dayUL){
+        var docFrag = document.createDocumentFragment();
+        DB.view(design+'/daylist', {
+            'success': function(data, testStatus){
+                var futonViewUrl = '/_utils/document.html?'+dbname+'/'
+                for(var rowNum in data['rows']){
+                    var row = data['rows'][rowNum];
+                    // Text for tooltip
+                    var noteDetail = row['doc']['detail'] || '<no details>';
+                    var noteLength = row['doc']['detail'].length || 0;
+                    var noteHtml = '<li title="'+noteDetail+'">';
+                    // Link to the futon doument viewer
+                    noteHtml += '<a href="'+futonViewUrl+row['id']+'">';
+                    noteHtml += row['doc']['summary']+'</a>'
+                    noteHtml += ' <small>'+noteLength+'</small>';
+                    noteHtml += '</li>';
+                    var noteLi = $(noteHtml)
+                    docFrag.appendChild(noteLi[0]);
+                }
+                dayUL.empty().append(docFrag);
+            },
+            'reduce':'false',
+            'include_docs':'true',
+            'key':dayKey
+        });
+    }
+    // Form saving
+    var saveForm = function(){
+        var fObj = {};
+        var child;
+        var children = $('form').children();
+        for (var lop = 0; lop < children.length; lop++){
+            child = children[lop];
+            switch (child.tagName){
+                case "INPUT":
+                case "TEXTAREA":
+                fObj[child.name] = child.value;
+                break;
+                default:
+                console.log(child);
+            }
+        }
+        DB.saveDoc(fObj);
+        // Update the UL with the new note
+        setTimeout('updateDayList()',500);
+    }
+    // On ready
+    $(function() {
+      // Populate Date field
+      var d = new Date()
+      var dstr = [d.getFullYear(), pad2(d.getMonth()+1), pad2(d.getDate())].join('/');
+      $('[name=date]').val(dstr)
+      // Populate UL with the current data
+      updateDayList();
+      // Setup Form saving
+      $('[id=go]').bind('click', saveForm)
+    });
+  </script>
+</html>
