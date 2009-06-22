@@ -23,6 +23,16 @@
     var DB = $.couch.db(dbname);
     // Var to track the expanded days
     var expandedDays = {};
+    var getTimestamp = function(){
+        var ts = '';
+        var now = new Date();
+        ts += [now.getUTCFullYear(), pad2(now.getUTCMonth()+1),
+                pad2(now.getUTCDate())].join('/');
+        ts += ' '+[pad2(now.getUTCHours()), pad2(now.getUTCMinutes()),
+                pad2(now.getUTCSeconds())].join(':');
+        ts += ' +0000'
+        return ts;
+    }
     var toggleDay = function(dayKey){
         var dayId = dayKey.replace(/\//g, '_');
         var dayUL = $('#'+dayId);
@@ -58,10 +68,10 @@
                 var docFrag = document.createDocumentFragment();
                 for(var rowNum in data['rows']){
                     var row = data['rows'][rowNum];
-                    var dayKey = row['key'];
+                    var dayKey = row['key'][0];
                     var dayId = dayKey.replace(/\//g,'_');
                     var dayNoteNum = row['value'];
-                    var dayDate = new Date(row['key']);
+                    var dayDate = new Date(dayKey);
                     var dayTitle = (dayDate.getMonth()+1)
                     dayTitle += '/'+pad2(dayDate.getDate());
                     var dayLI = $('<li>'+dayTitle+' ['+dayNoteNum+']</li>');
@@ -104,12 +114,14 @@
             },
             'reduce':'false',
             'include_docs':'true',
-            'key':dayKey
+            'startkey':[dayKey],
+            'endkey':[dayKey,{}]
         });
     }
     // Form saving
     var saveForm = function(){
         var fObj = {};
+        fObj['creation_timestamp'] = getTimestamp();
         var child;
         var children = $('form').children();
         for (var lop = 0; lop < children.length; lop++){
