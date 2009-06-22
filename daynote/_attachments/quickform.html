@@ -123,6 +123,7 @@
     var saveForm = function(){
         var fObj = {};
         fObj['creation_timestamp'] = getTimestamp();
+        fObj['implements'] = {'daynote':'true'};
         var child;
         var children = $('form').children();
         for (var lop = 0; lop < children.length; lop++){
