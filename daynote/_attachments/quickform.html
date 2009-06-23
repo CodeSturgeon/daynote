@@ -5,11 +5,11 @@
     <link rel="stylesheet" href="style/main.css" type="text/css">
 </head>
 <body>
-<form method="" action="">
-<input type="text" name='date' value='' /><br />
-<input type="text" name="summary" value="" /><br />
-<textarea name="detail"></textarea><br />
-<span id='go'>Click Here</span>
+<form action="javascript:saveForm()">
+    <input type="text" name='date' value='' /><br />
+    <input type="text" name="summary" value="" /><br />
+    <textarea name="detail"></textarea><br />
+    <input id='go' type='submit' value='make' />
 </form>
 <ul id='daysUL'></ul>
 </body>
@@ -149,8 +149,6 @@
       $('[name=date]').val(dstr)
       // Populate UL with the current data
       updateDayList();
-      // Setup Form saving
-      $('[id=go]').bind('click', saveForm)
     });
   </script>
 </html>
