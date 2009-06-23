@@ -140,13 +140,17 @@
         DB.saveDoc(fObj);
         // Update the UL with the new note
         setTimeout('updateDayList()',500);
+        $('[name=summary]').val('').focus();
+        $('[name=detail]').val('');
     }
     // On ready
     $(function() {
       // Populate Date field
-      var d = new Date()
+      var d = new Date();
       var dstr = [d.getFullYear(), pad2(d.getMonth()+1), pad2(d.getDate())].join('/');
-      $('[name=date]').val(dstr)
+      $('[name=date]').val(dstr);
+      $('[name=summary]').val('').focus();
+      $('[name=detail]').val('');
       // Populate UL with the current data
       updateDayList();
     });
