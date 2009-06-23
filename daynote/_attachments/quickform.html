@@ -148,6 +148,7 @@
       // Populate Date field
       var d = new Date();
       var dstr = [d.getFullYear(), pad2(d.getMonth()+1), pad2(d.getDate())].join('/');
+      expandedDays[dstr] = true;
       $('[name=date]').val(dstr);
       $('[name=summary]').val('').focus();
       $('[name=detail]').val('');
