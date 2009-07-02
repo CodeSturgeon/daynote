@@ -18,5 +18,9 @@ function(newDoc, oldDoc, userCtx){
         if(isNaN(Date.parse(dt))){
             throw {bad_date:'doc.date is not parseable ('+doc.date+')'};
         }
+        // Require a subject > 3 chars
+        if(newDoc.summary.length < 3){
+            throw {summary_required: 'daynote objects MUST have summarys'};
+        }
     }
 }
