@@ -4,12 +4,19 @@ function(newDoc, oldDoc, userCtx){
     // Validate docs with implements.daynote
     if(!newDoc._deleted && newDoc.implements && newDoc.implements.daynote){
         // Require a valid timestamp
-        if(isNaN(Date.parse(newDoc.creation_timestamp))){
-            throw {bad_timestamp:'doc.creation_timestamp is not parsable'};
+        var ts = newDoc.creation_timestamp.replace(/-/g,'/');
+        if(isNaN(Date.parse(ts))){
+            throw {
+                bad_timestamp:
+                    'doc.creation_timestamp is not parsable ('+
+                        newDoc.creation_timestamp+')'
+            };
         }
         // Require a valid date
-        if(isNaN(Date.parse(newDoc.date))){
-            throw {bad_date:'doc.date is not parseable'};
+        //var ts = newDoc.creation_timestamp.replace(/-/g,'/');
+        var dt = newDoc.date.replace(/-/g,'/');
+        if(isNaN(Date.parse(dt))){
+            throw {bad_date:'doc.date is not parseable ('+doc.date+')'};
         }
     }
 }

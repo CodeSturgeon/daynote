@@ -34,8 +34,7 @@
         return ts;
     }
     var toggleDay = function(dayKey){
-        var dayId = dayKey.replace(/\//g, '_');
-        var dayUL = $('#'+dayId);
+        var dayUL = $('#'+dayKey);
         if(expandedDays[dayKey]){
             expandedDays[dayKey] = false;
             dayUL.empty()
@@ -46,8 +45,7 @@
     }
     var toggler = function(dayKey){
         var toggleDayCap = function(){
-            var dayId = dayKey.replace(/\//g, '_');
-            var dayUL = $('#'+dayId);
+            var dayUL = $('#'+dayKey);
             if(expandedDays[dayKey]){
                 expandedDays[dayKey] = false;
                 dayUL.empty()
@@ -69,15 +67,15 @@
                 for(var rowNum in data['rows']){
                     var row = data['rows'][rowNum];
                     var dayKey = row['key'][0];
-                    var dayId = dayKey.replace(/\//g,'_');
                     var dayNoteNum = row['value'];
                     var dayDate = new Date(dayKey);
-                    var dayTitle = (dayDate.getMonth()+1)
-                    dayTitle += '/'+pad2(dayDate.getDate());
+                    //var dayTitle = (dayDate.getMonth()+1);
+                    //dayTitle += '/'+pad2(dayDate.getDate());
+                    var dayTitle = dayKey;
                     var dayLI = $('<li>'+dayTitle+' ['+dayNoteNum+']</li>');
                     docFrag.appendChild(dayLI[0]);
                     dayLI.bind('click', toggler(dayKey));
-                    var dayUL = $('<ul id="'+dayId+'"></ul>');
+                    var dayUL = $('<ul id="'+dayKey+'"></ul>');
                     docFrag.appendChild(dayUL[0]);
                     if(expandedDays[dayKey]){
                         populateDay(dayKey, dayUL);
@@ -152,7 +150,7 @@
       var d = new Date();
       d.setTime(adjusted);
       var dstr = [d.getFullYear(), pad2(d.getMonth()+1), 
-                    pad2(d.getDate())].join('/');
+                    pad2(d.getDate())].join('-');
       // Auto-expand adjusted 'today'
       expandedDays[dstr] = true;
       $('[name=date]').val(dstr);
