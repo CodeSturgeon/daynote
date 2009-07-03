@@ -90,6 +90,16 @@
             'descending':'true'
         });
     }
+    var wordCount = function(str){
+        var newStr = str;
+        // Sanitize whitespace
+        newStr = newStr.replace(/^\s+/,'');
+        newStr = newStr.replace(/\s+$/,'');
+        newStr = newStr.replace(/\s+/g,' ');
+        newStr = newStr.replace(/\s+\n/,'\n');
+        var splitStr = newStr.split(' ');
+        return splitStr.length;
+    }
     var populateDay = function(dayKey, dayUL){
         var docFrag = document.createDocumentFragment();
         DB.view(design+'/daylist', {
@@ -98,13 +108,21 @@
                 for(var rowNum in data['rows']){
                     var row = data['rows'][rowNum];
                     // Text for tooltip
-                    var noteDetail = row['doc']['detail'] || '<no details>';
-                    var noteLength = row['doc']['detail'].length || 0;
-                    var noteHtml = '<li title="'+noteDetail+'">';
+                    var noteDetail = '';
+                    var noteHtml = '<li';
+                    if(row['doc']['detail']){
+                        noteDetail = row['doc']['detail'];
+                        noteHtml += ' title="'+noteDetail+'"';
+                    }
+                    noteHtml += '>';
                     // Link to the futon doument viewer
                     noteHtml += '<a href="'+futonViewUrl+row['id']+'">';
-                    noteHtml += row['doc']['summary']+'</a>'
-                    noteHtml += ' <small>'+noteLength+'</small>';
+                    noteHtml += row['doc']['summary'] || '**MISSING SUMMARY**';
+                    noteHtml += '</a>';
+                    // If there is a Detail, do a word count
+                    if(noteDetail){
+                        noteHtml += ' <small>'+wordCount(noteDetail)+'</small>';
+                    }
                     noteHtml += '</li>';
                     var noteLi = $(noteHtml)
                     docFrag.appendChild(noteLi[0]);
