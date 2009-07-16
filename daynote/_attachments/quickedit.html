@@ -6,7 +6,9 @@
 <body>
 <form action="javascript:saveForm()">
     &nbsp;<input type="text" name='date' size='10' value='' />&nbsp;
-    <input type="text" name="summary" value="" /><br />
+    <input type="text" name="summary" value="" />&nbsp;
+    <a href="quickform.html"><small>New</small></a>
+    <br />
     <textarea name="detail" rows='10' cols='32'></textarea><br />
     <input id='go' type='submit' value='Save' />
 </form>
@@ -39,6 +41,7 @@
         // On ready
         $(function() {
             var qvars = getQueryVars(); 
+            $('[name=summary]').change(function(){document.title = $(this).val()})
             DB.openDoc(qvars['_id'], {'success':populateForm});
         });
     </script>
