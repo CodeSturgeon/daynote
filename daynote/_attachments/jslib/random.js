@@ -11,6 +11,7 @@ var wordCount = function(str){
     var splitStr = newStr.split(' ');
     return splitStr.length;
 }
+
 var getTimestamp = function(){
     var ts = '';
     var now = new Date();
@@ -20,4 +21,14 @@ var getTimestamp = function(){
             pad2(now.getUTCSeconds())].join(':');
     ts += ' +0000'
     return ts;
+}
+
+var getQueryVars = function(){
+    var chunks = document.location.search.substring(1).split('&');
+    var qvars = {};
+    for (var lop=0;lop<chunks.length;lop+=1){
+        var split = chunks[lop].split('=');
+        qvars[split[0]] = split[1];
+    }
+    return qvars;
 }

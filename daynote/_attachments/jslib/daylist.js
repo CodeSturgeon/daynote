@@ -58,7 +58,8 @@ var populateDay = function(dayKey, dayUL){
     var docFrag = document.createDocumentFragment();
     DB.view(design+'/daylist', {
         'success': function(data, testStatus){
-            var futonViewUrl = '/_utils/document.html?'+dbname+'/'
+            //var futonViewUrl = '/_utils/document.html?'+dbname+'/';
+            var futonViewUrl = 'quickedit.html?_id=';
             for(var rowNum in data['rows']){
                 var row = data['rows'][rowNum];
                 // Text for tooltip
