@@ -22,8 +22,8 @@ var toggler = function(dayKey){
     return toggleDayCap;
 }
 // Updates UL that lists days
-var updateDayList = function(){
-    DB.view(design+'/daylist', {
+var updateDayList = function(limit){
+    var options = {
         'success': function(data, testStatus){
             var daysUL = $('#daysUL');
             var docFrag = document.createDocumentFragment();
@@ -49,9 +49,10 @@ var updateDayList = function(){
         },
         'group':'true',
         'group_level':'1',
-        'limit':'30',
         'descending':'true'
-    });
+    };
+    options['limit'] = limit || 5;
+    DB.view(design+'/daylist',options);
 }
 var populateDay = function(dayKey, dayUL){
     var docFrag = document.createDocumentFragment();

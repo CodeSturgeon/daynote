@@ -44,7 +44,7 @@
         }
         DB.saveDoc(fObj);
         // Update the UL with the new note
-        setTimeout('updateDayList()',500);
+        setTimeout('updateDayList(3)',500);
         $('[name=summary]').val('').focus();
         $('[name=detail]').val('');
     }
@@ -64,7 +64,7 @@
       $('[name=summary]').val('').focus();
       $('[name=detail]').val('');
       // Populate UL with the current data
-      updateDayList();
+      updateDayList(3);
     });
   </script>
 </html>
