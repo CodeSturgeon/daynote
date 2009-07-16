@@ -2,13 +2,12 @@
 <html>
 <head>
     <title>Quick Note form</title>
-    <link rel="stylesheet" href="style/main.css" type="text/css">
 </head>
 <body>
 <form action="javascript:saveForm()">
-    <input type="text" name='date' value='' /><br />
+    &nbsp;<input type="text" name='date' size='10' value='' />&nbsp;
     <input type="text" name="summary" value="" /><br />
-    <textarea name="detail"></textarea><br />
+    <textarea name="detail" rows='10' cols='32'></textarea><br />
     <input id='go' type='submit' value='make' />
 </form>
 <ul id='daysUL'></ul>
@@ -16,6 +15,8 @@
   <script src="/_utils/script/json2.js"></script>
   <script src="/_utils/script/jquery.js?1.2.6"></script>
   <script src="/_utils/script/jquery.couch.js?0.8.0"></script>
+  <script src="jslib/daylist.js"></script>
+  <script src="jslib/random.js"></script>
   <script type="text/javascript" charset="utf-8">
     // Get CouchDB data
     var dbname = document.location.href.split('/')[3];
@@ -23,118 +24,6 @@
     var DB = $.couch.db(dbname);
     // Var to track the expanded days
     var expandedDays = {};
-    var getTimestamp = function(){
-        var ts = '';
-        var now = new Date();
-        ts += [now.getUTCFullYear(), pad2(now.getUTCMonth()+1),
-                pad2(now.getUTCDate())].join('/');
-        ts += ' '+[pad2(now.getUTCHours()), pad2(now.getUTCMinutes()),
-                pad2(now.getUTCSeconds())].join(':');
-        ts += ' +0000'
-        return ts;
-    }
-    var toggleDay = function(dayKey){
-        var dayUL = $('#'+dayKey);
-        if(expandedDays[dayKey]){
-            expandedDays[dayKey] = false;
-            dayUL.empty()
-        }else{
-            expandedDays[dayKey] = true;
-            populateDay(dayKey, dayUL);
-        }
-    }
-    var toggler = function(dayKey){
-        var toggleDayCap = function(){
-            var dayUL = $('#'+dayKey);
-            if(expandedDays[dayKey]){
-                expandedDays[dayKey] = false;
-                dayUL.empty()
-            }else{
-                expandedDays[dayKey] = true;
-                populateDay(dayKey, dayUL);
-            }
-        }
-        return toggleDayCap;
-    }
-    // Small padding function
-    var pad2 = function(number){ return (number<10) ? '0' + number : number; }
-    // Updates UL that lists days
-    var updateDayList = function(){
-        DB.view(design+'/daylist', {
-            'success': function(data, testStatus){
-                var daysUL = $('#daysUL');
-                var docFrag = document.createDocumentFragment();
-                for(var rowNum in data['rows']){
-                    var row = data['rows'][rowNum];
-                    var dayKey = row['key'][0];
-                    var dayNoteNum = row['value'];
-                    var dayDate = new Date(dayKey);
-                    //var dayTitle = (dayDate.getMonth()+1);
-                    //dayTitle += '/'+pad2(dayDate.getDate());
-                    var dayTitle = dayKey;
-                    var dayLI = $('<li>'+dayTitle+' ['+dayNoteNum+']</li>');
-                    docFrag.appendChild(dayLI[0]);
-                    dayLI.bind('click', toggler(dayKey));
-                    var dayUL = $('<ul id="'+dayKey+'"></ul>');
-                    docFrag.appendChild(dayUL[0]);
-                    if(expandedDays[dayKey]){
-                        populateDay(dayKey, dayUL);
-                    }
-                }
-                // for each expandedDays populateDay
-                daysUL.empty().append(docFrag);
-            },
-            'group':'true',
-            'group_level':'1',
-            'limit':'5',
-            'descending':'true'
-        });
-    }
-    var wordCount = function(str){
-        var newStr = str;
-        // Sanitize whitespace
-        newStr = newStr.replace(/^\s+/,'');
-        newStr = newStr.replace(/\s+$/,'');
-        newStr = newStr.replace(/\s+/g,' ');
-        newStr = newStr.replace(/\s+\n/,'\n');
-        var splitStr = newStr.split(' ');
-        return splitStr.length;
-    }
-    var populateDay = function(dayKey, dayUL){
-        var docFrag = document.createDocumentFragment();
-        DB.view(design+'/daylist', {
-            'success': function(data, testStatus){
-                var futonViewUrl = '/_utils/document.html?'+dbname+'/'
-                for(var rowNum in data['rows']){
-                    var row = data['rows'][rowNum];
-                    // Text for tooltip
-                    var noteDetail = '';
-                    var noteHtml = '<li';
-                    if(row['doc']['detail']){
-                        noteDetail = row['doc']['detail'];
-                        noteHtml += ' title="'+noteDetail+'"';
-                    }
-                    noteHtml += '>';
-                    // Link to the futon doument viewer
-                    noteHtml += '<a href="'+futonViewUrl+row['id']+'">';
-                    noteHtml += row['doc']['summary'] || '**MISSING SUMMARY**';
-                    noteHtml += '</a>';
-                    // If there is a Detail, do a word count
-                    if(noteDetail){
-                        noteHtml += ' <small>'+wordCount(noteDetail)+'</small>';
-                    }
-                    noteHtml += '</li>';
-                    var noteLi = $(noteHtml)
-                    docFrag.appendChild(noteLi[0]);
-                }
-                dayUL.empty().append(docFrag);
-            },
-            'reduce':'false',
-            'include_docs':'true',
-            'startkey':[dayKey],
-            'endkey':[dayKey,{}]
-        });
-    }
     // Form saving
     var saveForm = function(){
         var fObj = {};
