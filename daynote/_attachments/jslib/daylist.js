@@ -1,5 +1,5 @@
 var toggleDay = function(dayKey){
-    var dayUL = $('#'+dayKey);
+    var dayUL = jQuery('#'+dayKey);
     if(expandedDays[dayKey]){
         expandedDays[dayKey] = false;
         dayUL.empty()
@@ -10,7 +10,7 @@ var toggleDay = function(dayKey){
 }
 var toggler = function(dayKey){
     var toggleDayCap = function(){
-        var dayUL = $('#'+dayKey);
+        var dayUL = jQuery('#'+dayKey);
         if(expandedDays[dayKey]){
             expandedDays[dayKey] = false;
             dayUL.empty()
