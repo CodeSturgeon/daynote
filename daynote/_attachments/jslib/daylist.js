@@ -67,7 +67,10 @@ var populateDay = function(dayKey, dayUL){
                 var noteHtml = '<li';
                 if(row['doc']['detail']){
                     noteDetail = row['doc']['detail'];
-                    noteHtml += ' title="'+noteDetail+'"';
+                    noteHtml += ' title="';
+                    // This is _REALLY_ dumb but escaping just does not work
+                    noteHtml += noteDetail.replace(/"/g,"'");
+                    noteHtml += '"';
                 }
                 noteHtml += '>';
                 // Link to the futon doument viewer
