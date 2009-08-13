@@ -35,7 +35,7 @@
             doc['date'] = $('[name=date]').val();
             doc['summary'] = $('[name=summary]').val();
             doc['detail'] = $('[name=detail]').val();
-            DB.saveDoc(doc);
+            DB.saveDoc(doc, {'success': function(){alert('saved')}});
         }
         // On ready
         $(function() {
