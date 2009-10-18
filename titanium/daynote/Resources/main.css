@@ -1,0 +1,46 @@
+body {
+	background-color: #959595;
+	color: #000;
+}
+
+button#save_and_new {
+	background-color: #3c16ff;
+	float: right;
+}
+
+button#save {
+	background-color: #00ff3f;
+}
+
+textarea#detail {
+	background-color: #00d4ff;
+	width: 100%;
+	height: 100%;
+}
+
+input#subject {
+	width: 100%;
+}
+
+table#layout {
+	width: 100%;
+	height: 100%;
+}
+
+form {
+	margin: 0;
+}
+
+input#date {
+	width: 100%;
+}
+
+td#date {
+	width: 5em;
+	height: 1em;
+}
+
+td#save {
+	height: 1.5em;
+}
+
