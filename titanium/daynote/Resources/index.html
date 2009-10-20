@@ -2,14 +2,20 @@
 <head>
     <script type="text/javascript" src="jquery-1.3.2.js"></script>
     <link rel="stylesheet" type='text/css' href='main.css' />
+    <script type='text/javascript'>
+        // Some JS callbacks need Python functions to be wrapped
+        var js_callback = function(callback){return function(){callback()}}
+        // Python cannot subscript some JS objects
+        var js_lookup = function(obj, idx){return obj[idx]}
+    </script>
     <script type='text/python' src='app://mod.py'> </script>
     <script type='text/javascript'>
-        jQuery(document).ready(function(){go()})
+        //jQuery(document).ready(function(){go()})
     </script>
 </head>
 <body>
-    <form>
         <table id='layout'>
+    <form>
             <tr>
                 <td id='date'>
                     <input type='text' id='note_date' maxlength='10'           
@@ -24,6 +30,7 @@
                     <textarea id='detail'></textarea>
                 </td>
             </tr>
+    </form>
             <tr id='button_bar'>
                 <td id='save' colspan=2>
                     <button id='save'>Save</button>
@@ -31,6 +38,5 @@
                 </td>
             </tr>
         </table>
-    </form>
 </body>
 </html>
